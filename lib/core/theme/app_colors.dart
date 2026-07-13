@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 class AppColors {
   const AppColors._();
 
-  static const Color primary = Color(0xFF2E7D6B);
-  static const Color primaryLight = Color(0xFF4DB6A2);
+  static const Color primary = Color(0xFF1E88E5);
+  static const Color primaryLight = Color(0xFF64B5F6);
   static const Color income = Color(0xFF2E9E5B);
   static const Color expense = Color(0xFFE5484D);
   static const Color savings = Color(0xFF3B82F6);
@@ -14,7 +14,7 @@ class AppColors {
 
   /// A stable, reasonably distinct color per index for chart segments.
   static const List<Color> chartPalette = <Color>[
-    Color(0xFF2E7D6B),
+    Color(0xFF1E88E5),
     Color(0xFFE5484D),
     Color(0xFF3B82F6),
     Color(0xFFF59E0B),

@@ -26,8 +26,6 @@ class AppScaffold extends StatelessWidget {
         onPressed: () => showAddTransactionSheet(context),
         child: const Icon(Icons.add),
       ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         height: 64,
         padding: EdgeInsets.zero,
@@ -50,7 +48,6 @@ class AppScaffold extends StatelessWidget {
               currentIndex: shell.currentIndex,
               onTap: _goBranch,
             ),
-            const SizedBox(width: 48), // gap for the docked FAB
             _NavItem(
               icon: Icons.pie_chart_outline,
               activeIcon: Icons.pie_chart,

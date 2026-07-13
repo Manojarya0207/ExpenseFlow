@@ -156,7 +156,7 @@ class _SummarySection extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          childAspectRatio: 1.5,
+          childAspectRatio: 1.3,
           children: <Widget>[
             SummaryCard(
               label: 'Monthly Income',

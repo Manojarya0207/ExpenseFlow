@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/app_providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
+import '../../core/utils/pdf_generator.dart';
 import '../../data/models/summary_models.dart';
+import '../../data/models/transaction_item.dart';
 import '../../widgets/section_header.dart';
 
 /// Reports tab: monthly income/expense/savings breakdown with progress bars
@@ -24,14 +26,38 @@ class ReportsScreen extends ConsumerWidget {
         title: const Text('Monthly Report'),
         actions: <Widget>[
           IconButton(
-            tooltip: 'Export (coming soon)',
+            tooltip: 'Export PDF',
             icon: const Icon(Icons.ios_share),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('PDF / Excel export is coming soon.'),
-                ),
-              );
+            onPressed: () async {
+              final MonthlySummary? summary = summaryAsync.value;
+              if (summary == null) return;
+              
+              try {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Generating PDF Report...'),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+                
+                final List<TransactionItem> transactions =
+                    await ref.read(monthTransactionsProvider.future);
+                
+                await PdfGenerator.exportMonthlyReport(
+                  summary: summary,
+                  transactions: transactions,
+                  currencySymbol: symbol,
+                );
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error generating PDF: $e'),
+                      backgroundColor: Theme.of(context).colorScheme.error,
+                    ),
+                  );
+                }
+              }
             },
           ),
         ],
