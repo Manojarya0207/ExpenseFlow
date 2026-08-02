@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../constants/app_routes.dart';
+import '../../data/models/investment_model.dart';
 import '../../features/analytics/analytics_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
 import '../../features/expense/expense_form_screen.dart';
 import '../../features/income/income_form_screen.dart';
+import '../../features/investment/investment_form_screen.dart';
+import '../../features/investment/investments_screen.dart';
 import '../../features/reports/reports_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/transaction/transactions_screen.dart';
@@ -49,6 +52,14 @@ final GoRouter appRouter = GoRouter(
         StatefulShellBranch(
           routes: <RouteBase>[
             GoRoute(
+              path: AppRoutes.investments,
+              builder: (_, _) => const InvestmentsScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: <RouteBase>[
+            GoRoute(
               path: AppRoutes.reports,
               builder: (_, _) => const ReportsScreen(),
             ),
@@ -73,6 +84,18 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.addIncome,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (_, _) => const IncomeFormScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.addInvestment,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, _) => const InvestmentFormScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.editInvestment,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (_, GoRouterState state) => InvestmentFormScreen(
+        existing: state.extra as InvestmentModel?,
+      ),
     ),
   ],
   navigatorKey: _rootNavigatorKey,

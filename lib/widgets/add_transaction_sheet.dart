@@ -41,6 +41,19 @@ Future<void> showAddTransactionSheet(BuildContext context) {
                 context.push(AppRoutes.addIncome);
               },
             ),
+            ListTile(
+              leading: CircleAvatar(
+                backgroundColor: AppColors.primary.withValues(alpha: 0.14),
+                foregroundColor: AppColors.primary,
+                child: const Icon(Icons.trending_up),
+              ),
+              title: const Text('Add Investment'),
+              subtitle: const Text('Record a SIP or stock purchase'),
+              onTap: () {
+                Navigator.of(sheetContext).pop();
+                context.push(AppRoutes.addInvestment);
+              },
+            ),
             const SizedBox(height: 8),
           ],
         ),

@@ -11,6 +11,7 @@ class MonthlySummary {
     required this.topIncomeSource,
     required this.categoryTotals,
     required this.budgetUtilization,
+    this.carryForward = 0,
   });
 
   final DateTime month;
@@ -31,11 +32,15 @@ class MonthlySummary {
   /// Fraction (0..1+) of total budget consumed by expenses; null if no budget.
   final double? budgetUtilization;
 
+  /// Net balance (all income - all expense) accumulated before this month;
+  /// automatically carried forward into the month's remaining balance.
+  final double carryForward;
+
+  /// This month's savings only (income - expense).
   double get savings => totalIncome - totalExpense;
 
-  /// Remaining balance for the month (same basis as savings in an offline,
-  /// single-month view).
-  double get remainingBalance => savings;
+  /// Total balance available: previous months' leftover + this month's savings.
+  double get remainingBalance => carryForward + savings;
 
   factory MonthlySummary.empty(DateTime month) {
     return MonthlySummary(

@@ -20,18 +20,26 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: scheme,
       scaffoldBackgroundColor:
-          isDark ? const Color(0xFF12161A) : const Color(0xFFF5F7F8),
+          isDark ? const Color(0xFF12161A) : const Color(0xFFF7FAFD),
       appBarTheme: AppBarTheme(
         centerTitle: false,
         elevation: 0,
-        backgroundColor: isDark ? const Color(0xFF12161A) : const Color(0xFFF5F7F8),
-        foregroundColor: scheme.onSurface,
+        backgroundColor: isDark ? const Color(0xFF12161A) : const Color(0xFFF7FAFD),
+        foregroundColor: isDark ? scheme.onSurface : AppColors.primaryDark,
+        titleTextStyle: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: isDark ? scheme.onSurface : AppColors.primaryDark,
+        ),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
+          side: isDark
+              ? BorderSide.none
+              : const BorderSide(color: Color(0xFFE4EDF6)),
         ),
         color: isDark ? const Color(0xFF1B2127) : Colors.white,
       ),
@@ -40,11 +48,15 @@ class AppTheme {
         fillColor: isDark ? const Color(0xFF1B2127) : Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: scheme.outlineVariant),
+          borderSide: BorderSide(
+            color: isDark ? scheme.outlineVariant : const Color(0xFFD6E3F0),
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: scheme.outlineVariant),
+          borderSide: BorderSide(
+            color: isDark ? scheme.outlineVariant : const Color(0xFFD6E3F0),
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -54,10 +66,19 @@ class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           minimumSize: const Size.fromHeight(52),
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
         ),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+      ),
+      bottomAppBarTheme: BottomAppBarThemeData(
+        color: isDark ? const Color(0xFF1B2127) : Colors.white,
       ),
       navigationBarTheme: NavigationBarThemeData(
         elevation: 3,

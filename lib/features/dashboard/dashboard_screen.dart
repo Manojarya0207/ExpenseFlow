@@ -171,13 +171,13 @@ class _SummarySection extends StatelessWidget {
               color: AppColors.expense,
             ),
             SummaryCard(
-              label: 'Savings',
+              label: 'Savings (This Month)',
               value: Formatters.money(summary.savings, symbol),
               icon: Icons.savings,
               color: AppColors.savings,
             ),
             SummaryCard(
-              label: 'Remaining Balance',
+              label: 'Total Balance',
               value: Formatters.money(summary.remainingBalance, symbol),
               icon: Icons.account_balance_wallet,
               color: AppColors.primary,
@@ -200,6 +200,7 @@ class _MetricsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<(String, String)> rows = <(String, String)>[
+      ('Carried Forward', Formatters.money(summary.carryForward, symbol)),
       ('Avg. Daily Expense', Formatters.money(summary.averageDailyExpense, symbol)),
       ('Largest Expense', Formatters.money(summary.largestExpense, symbol)),
       (

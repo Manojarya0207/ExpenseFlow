@@ -5,8 +5,10 @@ import '../../data/database/app_database.dart';
 import '../../features/settings/settings_provider.dart';
 import '../../data/models/expense_model.dart';
 import '../../data/models/income_model.dart';
+import '../../data/models/investment_model.dart';
 import '../../data/models/summary_models.dart';
 import '../../data/models/transaction_item.dart';
+import '../../data/repository/investment_repository.dart';
 import '../../data/repository/transaction_filter.dart';
 import '../../data/repository/transaction_repository.dart';
 import '../utils/date_utils.dart';
@@ -126,3 +128,94 @@ class TransactionController {
 
 final Provider<TransactionController> transactionControllerProvider =
     Provider<TransactionController>((Ref ref) => TransactionController(ref));
+
+/// Investment holdings repository.
+final Provider<InvestmentRepository> investmentRepositoryProvider =
+    Provider<InvestmentRepository>(
+  (Ref ref) => InvestmentRepository(ref.watch(appDatabaseProvider)),
+);
+
+/// All investment holdings, newest first.
+final FutureProvider<List<InvestmentModel>> investmentsProvider =
+    FutureProvider<List<InvestmentModel>>((Ref ref) async {
+  ref.watch(dataRefreshProvider);
+  return ref.watch(investmentRepositoryProvider).getInvestments();
+});
+
+/// Portfolio totals for the Investments summary cards.
+final FutureProvider<PortfolioSummary> portfolioSummaryProvider =
+    FutureProvider<PortfolioSummary>((Ref ref) async {
+  ref.watch(dataRefreshProvider);
+  return ref.watch(investmentRepositoryProvider).portfolioSummary();
+});
+
+/// Write-side controller for investments. Each purchase also creates a linked
+/// expense (category 'Investment') so monthly balances reflect the money that
+/// left the pocket; the linked row is kept in sync on edit and delete so
+/// totals never drift.
+class InvestmentController {
+  InvestmentController(this._ref);
+
+  final Ref _ref;
+
+  InvestmentRepository get _repo => _ref.read(investmentRepositoryProvider);
+
+  TransactionRepository get _txRepo =>
+      _ref.read(transactionRepositoryProvider);
+
+  void _invalidate() {
+    _ref.read(dataRefreshProvider.notifier).state++;
+  }
+
+  ExpenseModel _linkedExpense(InvestmentModel investment, {int? id}) {
+    return ExpenseModel(
+      id: id,
+      amount: investment.investedValue,
+      category: 'Investment',
+      paymentMethod: 'Net Banking',
+      notes: '${investment.type.label}: ${investment.name}',
+      date: investment.date,
+      createdAt: investment.createdAt,
+    );
+  }
+
+  Future<void> addInvestment(InvestmentModel investment) async {
+    final int expenseId = await _txRepo.addExpense(_linkedExpense(investment));
+    await _repo.addInvestment(
+      investment.copyWith(linkedExpenseId: expenseId),
+    );
+    _invalidate();
+  }
+
+  Future<void> updateInvestment(InvestmentModel investment) async {
+    await _repo.updateInvestment(investment);
+    final int? expenseId = investment.linkedExpenseId;
+    if (expenseId != null) {
+      await _txRepo.updateExpense(
+        _linkedExpense(investment, id: expenseId),
+      );
+    }
+    _invalidate();
+  }
+
+  /// Update just the manually-tracked market price (stocks). The invested
+  /// amount is unchanged, so the linked expense is left alone.
+  Future<void> updateCurrentPrice(
+      InvestmentModel investment, double price) async {
+    await _repo.updateInvestment(investment.copyWith(currentPrice: price));
+    _invalidate();
+  }
+
+  Future<void> deleteInvestment(InvestmentModel investment) async {
+    if (investment.id != null) {
+      await _repo.deleteInvestment(investment.id!);
+    }
+    if (investment.linkedExpenseId != null) {
+      await _txRepo.deleteExpense(investment.linkedExpenseId!);
+    }
+    _invalidate();
+  }
+}
+
+final Provider<InvestmentController> investmentControllerProvider =
+    Provider<InvestmentController>((Ref ref) => InvestmentController(ref));

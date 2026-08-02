@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
-/// Central palette. A calm teal/green primary with money-semantic accents
-/// (green = income, red = expense) reused across cards, tiles and charts.
+/// Central palette. A professional deep-blue primary on white surfaces with
+/// money-semantic accents (green = income, red = expense) reused across
+/// cards, tiles and charts.
 class AppColors {
   const AppColors._();
 
-  static const Color primary = Color(0xFF1E88E5);
-  static const Color primaryLight = Color(0xFF64B5F6);
+  static const Color primary = Color(0xFF1565C0);
+  static const Color primaryLight = Color(0xFF5E92F3);
+  static const Color primaryDark = Color(0xFF0D47A1);
   static const Color income = Color(0xFF2E9E5B);
   static const Color expense = Color(0xFFE5484D);
   static const Color savings = Color(0xFF3B82F6);
@@ -14,7 +16,7 @@ class AppColors {
 
   /// A stable, reasonably distinct color per index for chart segments.
   static const List<Color> chartPalette = <Color>[
-    Color(0xFF1E88E5),
+    Color(0xFF1565C0),
     Color(0xFFE5484D),
     Color(0xFF3B82F6),
     Color(0xFFF59E0B),

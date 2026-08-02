@@ -159,12 +159,34 @@ class TransactionRepository {
   // Aggregation
   // ---------------------------------------------------------------------------
 
+  /// Net balance (all income - all expense) recorded strictly before [monthStart].
+  ///
+  /// This is the amount automatically carried forward into the month; the date
+  /// indexes keep the two SUM range scans cheap.
+  Future<double> balanceBefore(DateTime monthStart) async {
+    final Database db = await _database;
+    final String cutoff = monthStart.toIso8601String();
+    Future<double> sumBefore(String table) async {
+      final List<Map<String, Object?>> rows = await db.rawQuery(
+        'SELECT COALESCE(SUM(${DbConstants.colAmount}), 0) AS total '
+        'FROM $table WHERE ${DbConstants.colDate} < ?',
+        <Object?>[cutoff],
+      );
+      return (rows.first['total'] as num).toDouble();
+    }
+
+    final double income = await sumBefore(DbConstants.tableIncome);
+    final double expense = await sumBefore(DbConstants.tableExpense);
+    return income - expense;
+  }
+
   /// Build the dashboard/report summary for the month containing [month].
   Future<MonthlySummary> monthlySummary(DateTime month) async {
     final DateTime start = DateUtilsX.monthStart(month);
     final DateTime end = DateUtilsX.nextMonthStart(month);
     final List<ExpenseModel> expenses = await _expensesInRange(start, end);
     final List<IncomeModel> incomes = await _incomesInRange(start, end);
+    final double carryForward = await balanceBefore(start);
 
     if (expenses.isEmpty && incomes.isEmpty) {
       final MonthlySummary base = MonthlySummary.empty(start);
@@ -179,6 +201,7 @@ class TransactionRepository {
         topIncomeSource: '',
         categoryTotals: const <CategoryTotal>[],
         budgetUtilization: util,
+        carryForward: carryForward,
       );
     }
 
@@ -235,6 +258,7 @@ class TransactionRepository {
       topIncomeSource: topIncomeSource,
       categoryTotals: categoryTotals,
       budgetUtilization: await _budgetUtilization(totalExpense),
+      carryForward: carryForward,
     );
   }
 

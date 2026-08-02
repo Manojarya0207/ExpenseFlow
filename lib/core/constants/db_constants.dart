@@ -4,11 +4,12 @@ class DbConstants {
   const DbConstants._();
 
   static const String databaseName = 'expenseflow.db';
-  static const int databaseVersion = 1;
+  static const int databaseVersion = 2;
 
   static const String tableExpense = 'expense';
   static const String tableIncome = 'income';
   static const String tableBudget = 'budget';
+  static const String tableInvestment = 'investment';
 
   // Shared columns.
   static const String colId = 'id';
@@ -21,4 +22,12 @@ class DbConstants {
   // Expense-only columns.
   static const String colPaymentMethod = 'paymentMethod';
   static const String colImage = 'image';
+
+  // Investment-only columns.
+  static const String colType = 'type';
+  static const String colName = 'name';
+  static const String colQuantity = 'quantity';
+  static const String colBuyPrice = 'buyPrice';
+  static const String colCurrentPrice = 'currentPrice';
+  static const String colLinkedExpenseId = 'linkedExpenseId';
 }

@@ -13,6 +13,7 @@ class AppCategories {
     'Travel',
     'Fuel',
     'Shopping',
+    'PG',
     'Rent',
     'Electricity',
     'Water Bill',
@@ -63,6 +64,8 @@ class AppCategories {
         return Icons.local_gas_station;
       case 'Shopping':
         return Icons.shopping_bag;
+      case 'PG':
+        return Icons.night_shelter;
       case 'Rent':
         return Icons.home;
       case 'Electricity':

@@ -28,7 +28,14 @@ class AppDatabase {
         await db.execute('PRAGMA foreign_keys = ON');
       },
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await _createInvestmentTable(db);
+    }
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -70,6 +77,31 @@ class AppDatabase {
     );
     await db.execute(
       'CREATE INDEX idx_income_date ON ${DbConstants.tableIncome}(${DbConstants.colDate})',
+    );
+
+    await _createInvestmentTable(db);
+  }
+
+  /// Investment holdings (SIPs + stocks). Added in schema v2; one table with
+  /// nullable stock-only columns keeps the plumbing simple for two row shapes.
+  Future<void> _createInvestmentTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE ${DbConstants.tableInvestment} (
+        ${DbConstants.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${DbConstants.colType} TEXT NOT NULL,
+        ${DbConstants.colName} TEXT NOT NULL,
+        ${DbConstants.colAmount} REAL NOT NULL,
+        ${DbConstants.colQuantity} REAL,
+        ${DbConstants.colBuyPrice} REAL,
+        ${DbConstants.colCurrentPrice} REAL,
+        ${DbConstants.colDate} TEXT NOT NULL,
+        ${DbConstants.colNotes} TEXT,
+        ${DbConstants.colLinkedExpenseId} INTEGER,
+        ${DbConstants.colCreatedAt} TEXT NOT NULL
+      )
+    ''');
+    await db.execute(
+      'CREATE INDEX idx_investment_date ON ${DbConstants.tableInvestment}(${DbConstants.colDate})',
     );
   }
 
